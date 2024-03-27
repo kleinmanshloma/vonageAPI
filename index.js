@@ -20,7 +20,7 @@ const onInboundCall = (req, res) => {
 };
 
 const onInput = (req, res) => {
-  const dtmf = request.body.dtmf;
+  const dtmf = req.body.dtmf;
   let actions = [];
   let ncco = [];
   switch (req.body.dtmf.digits) {
