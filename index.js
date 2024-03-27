@@ -23,6 +23,7 @@ const onInboundCall = (request, response) => {
 
 const onInput = (request, response) => {
   const dtmf = request.body.dtmf;
+  console.log(dtmf);
 
   const ncco = [
     {
