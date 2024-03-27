@@ -5,54 +5,45 @@ const bodyParser = require("body-parser");
 
 app.use(bodyParser.json());
 
-const onInboundCall = (req, res) => {
-  const ncco = [
+function mainMenu(req) {
+  return [
     {
       action: "talk",
-      text: "Please press 1 to hear the current date and time, or press 2 to listen to a song.",
+      text: "Please enter a digit.",
     },
     {
       action: "input",
-      eventUrl: [`${req.protocol}://${req.get("host")}/webhooks/dtmf`],
+      submitOnHash: true,
+      eventUrl: [`${req.protocol}://${req.get("host")}/webhooks/events`],
+      type: ["dtmf", "speech"],
+      dtmf: {
+        maxDigits: 1,
+      },
     },
   ];
-  return ncco;
-};
+}
 
-const onInput = (req, res) => {
-  const dtmf = req.body.dtmf;
-  let actions = [];
-  let ncco = [];
-  switch (req.body.dtmf.digits) {
-    case "1":
-      actions.push({
-        action: "talk",
-        text: `It is ${new Intl.DateTimeFormat(undefined, {
-          dateStyle: "full",
-          timeStyle: "long",
-        }).format(Date.now())}`,
-      });
-      break;
-    case "2":
-      actions.push({
-        action: "stream",
-        streamUrl: [
-          "https://nexmo-community.github.io/ncco-examples/assets/voice_api_audio_streaming.mp3",
-        ],
-      });
-  }
-  ncco = actions.concat(mainMenu(req));
-
-  console.log(ncco);
-
-  res.json(ncco);
-};
-
-app.get("/webhooks/answer", onInboundCall).post("/webhooks/dtmf", onInput);
+app.get("/webhooks/answer", (req, res) => {
+  res.json(mainMenu(req));
+});
 
 app.post("/webhooks/events", (req, res) => {
-  console.log(req.body);
+  const event = req.body;
+  console.log("Received event:", event);
+  if (event.dtmf) {
+    const digit = event.dtmf.digits;
+    console.log("Received DTMF digit:", digit);
+    // Handle DTMF input
+  } else if (event.speech) {
+    const text = event.speech.text;
+    console.log("Received Speech input:", text);
+    // Handle speech input
+  }
   res.sendStatus(204);
+});
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
 });
 
 app.listen(8080, () => {
