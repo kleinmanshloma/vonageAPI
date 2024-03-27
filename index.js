@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 
-app.use(bodyParser.json());
-
 const bodyParser = require("body-parser");
+
+app.use(bodyParser.json());
 
 const onInboundCall = (request, response) => {
   const ncco = [
