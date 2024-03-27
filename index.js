@@ -9,6 +9,7 @@ function mainMenu(req) {
   return [
     {
       action: "talk",
+      voiceName: "Joanna",
       text: "Please enter a digit.",
     },
     {
