@@ -27,7 +27,7 @@ app.post("/webhooks/events", (req, res) => {
 });
 
 app.post("/webhooks/dtmf", (req, res) => {
-  console.log("yup", req.body.from_user);
+  console.log("yup", req.body);
   const dtmf = req.body.dtmf;
   const ncco = [];
 
