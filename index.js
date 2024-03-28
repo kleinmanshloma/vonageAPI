@@ -1,52 +1,51 @@
 const express = require("express");
 const app = express();
-
 const bodyParser = require("body-parser");
 
 app.use(bodyParser.json());
 
-function mainMenu(req) {
-  return [
+app.get("/webhooks/answer", (req, res) => {
+  const ncco = [
     {
       action: "talk",
-      voiceName: "Joanna",
-      text: "Please enter a digit.",
+      text: "Please leave a message after the beep, For Nuchem Friezel, then press # when you are done.",
+      bargeIn: true,
     },
     {
       action: "input",
-      submitOnHash: true,
-      eventUrl: [`${req.protocol}://${req.get("host")}/webhooks/events`],
-      type: ["dtmf", "speech"],
-      dtmf: {
-        maxDigits: 1,
-      },
+      maxDigits: 1,
+      eventUrl: [`${req.protocol}://${req.get("host")}/webhooks/dtmf`],
     },
   ];
-}
 
-app.get("/webhooks/answer", (req, res) => {
-  res.json(mainMenu(req));
+  res.json(ncco);
 });
 
 app.post("/webhooks/events", (req, res) => {
-  const event = req.body;
-  console.log("Received event:", event);
-  if (event.dtmf) {
-    const digit = event.dtmf.digits;
-    console.log("Received DTMF digit:", digit);
-    // Handle DTMF input
-  } else if (event.speech) {
-    const text = event.speech.text;
-    console.log("Received Speech input:", text);
-    // Handle speech input
+  console.log(req.body);
+  res.status(200).end();
+});
+
+app.post("/webhooks/dtmf", (req, res) => {
+  console.log(req.body);
+  const dtmf = req.body.dtmf;
+  const ncco = [];
+
+  if (dtmf === "1") {
+    ncco.push({
+      action: "talk",
+      text: `You have pressed ${req.body.dtmf},Thank you for your order. Goodbye.`,
+    });
+  } else {
+    ncco.push({
+      action: "talk",
+      text: "Sorry, I did not understand your response. Goodbye.",
+    });
   }
-  res.sendStatus(204);
+
+  res.json(ncco);
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
-app.listen(8080, () => {
-  console.log("Server is running on port 8080");
+app.listen(80, () => {
+  console.log("Server is running on port 80");
 });
