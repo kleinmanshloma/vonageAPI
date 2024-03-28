@@ -22,12 +22,12 @@ app.get("/webhooks/answer", (req, res) => {
 });
 
 app.post("/webhooks/events", (req, res) => {
-  console.log(req.body);
+  console.log(req.body.from_user);
   res.status(200).end();
 });
 
 app.post("/webhooks/dtmf", (req, res) => {
-  console.log(req.body);
+  console.log("yup", req.body.from_user);
   const dtmf = req.body.dtmf;
   const ncco = [];
 
